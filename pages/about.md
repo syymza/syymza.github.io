@@ -4,6 +4,7 @@ title: About
 tagline: Where I am supposed to talk about myself
 description: "About Daniele Zanni"
 group: nav
+
 ---
 {% include JB/setup %}
 
