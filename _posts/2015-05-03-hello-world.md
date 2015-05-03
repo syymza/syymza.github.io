@@ -3,7 +3,7 @@ layout: post
 title: console.log('Hello World!');
 tagline: The first post
 description: The first post of this coding blog
-category: Random Posts
+category: Random
 tags: ['intro']
 ---
 {% include JB/setup %}
