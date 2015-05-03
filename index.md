@@ -8,7 +8,7 @@ Work in progress...
 
 ## Recent Posts
 
-Here's a list of my latest posts
+Here's a list of my latest posts:
 
 <ul class="posts">		
   {% for post in site.posts %}		
