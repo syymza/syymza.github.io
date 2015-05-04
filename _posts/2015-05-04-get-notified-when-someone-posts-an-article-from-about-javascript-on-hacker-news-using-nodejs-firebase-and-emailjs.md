@@ -5,6 +5,7 @@ description: "Get Notified When Someone Posts An Article From About Javascript o
 tagline: A project for HN fanatics
 category: Projects
 tags: ['code', 'io.js', 'es6', 'back-end']
+image: js-on-hn.png
 
 ---
 {% include JB/setup %}
