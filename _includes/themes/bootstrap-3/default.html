@@ -26,16 +26,16 @@
     <meta content="{{ site.description }}" property="og:description">
     {% endif %}
     {% if page.url %}
-    <meta content="{{ BASE_PATH }}{{ page.url }}" property="og:url">
+    <meta content="{{ site.url }}{{ page.url }}" property="og:url">
     {% endif %}
     {% if page.date %}
     <meta content="{{ page.date | date_to_xmlschema }}" property="article:published_time">
-    <meta content="{{ BASE_PATH }}/pages/about.html" property="article:author">
+    <meta content="{{ site.url }}/pages/about.html" property="article:author">
     {% endif %}
     {% if page.image %}
-    <meta content="{{ BASE_PATH }}/resources/{{ page.image }}" property="og:image">
+    <meta content="{{ site.url }}/resources/{{ page.image }}" property="og:image">
     {% else %}
-    <meta content="{{ BASE_PATH }}/resources/logo-high-resolution.png" property="og:image">
+    <meta content="{{ site.url }}/resources/logo-high-resolution.png" property="og:image">
     {% endif %}
     {% if page.categories %}
     {% for category in page.categories limit:1 %}
