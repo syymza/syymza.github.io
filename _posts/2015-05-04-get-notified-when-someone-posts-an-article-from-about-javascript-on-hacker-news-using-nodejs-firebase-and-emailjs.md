@@ -48,7 +48,7 @@ Now it is time to install the external module dependencies that we are going to 
     npm install firebase emailjs --save
     
 
-Now we only need to init git in our folder, before beginning to actually write some code:
+Finally, we only need to init git in our folder, before beginning to actually write some code:
 
     git init
     
@@ -77,7 +77,7 @@ newPostsRef.on("value", function(snapshot) {
 
 {% endhighlight %}
 
-Run your index with `node index.js`. If you wait enough time, you should now see your terminal logging the ID of every new post published on Hacker News. 
+Run your *index.js* file with `node index.js`. If you wait enough time, you should now see your terminal logging the ID of every new post published on Hacker News. 
 We can now use this ID to retrieve the information about the specific post.
 Let's create a function that does exactly that:
 
@@ -116,6 +116,7 @@ function filterInterestingPosts(postSnapshot) {
     
     let regEx = /(js|javascript)/i;
     let title = postSnapshot.val().title;
+    let url = postSnapshot.val().url;
     let isAboutJs = regEx.test(title);
     console.log(title, isAboutJs);
 }
@@ -164,7 +165,7 @@ ________
 ##Adding Email.js to send your emails
 
 I use Gmail to send my emails, but you can use your favorite SMTP server. In any case you will probably need to have some credentials to send your email.
-Let's create a config file which won't be shared in your VCS (or add them manually to *.gitignore* if you don't have `printf` in your SO):
+Let's create a config file which won't be shared in your VCS. Add the `node_modules` and `config.json` manually to *.gitignore* if you don't have `printf` in your SO):
 
 {% highlight bash %}
 
@@ -226,7 +227,7 @@ Now we can create our `sendEmail` function according to the [Email.js documentat
         server.send(email, function(err, message) { console.log(err || message); });
     }
 
-Now, the we only need to invoke our `sendEmail` when the `isAboutJs` variable is true, inside `filterInterestingPosts`
+Finally, the we only need to invoke our `sendEmail` when the `isAboutJs` variable is true, inside `filterInterestingPosts`:
 
 {% highlight javascript %}
 
@@ -241,7 +242,7 @@ ________
 
 ##Summary
 
-That's all. Your application is ready to be deployed on your favorite host and you should start to receive emails for each post about JS posted on Hacker News.
+That's all. Your application should be ready to be deployed on your favorite node hosting service and you should start to receive emails for each post about Javascript posted on Hacker News.
 
 This is the entire code for the index.js file:
 
