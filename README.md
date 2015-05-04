@@ -2,7 +2,7 @@
 
 This repository contains the code for my coding notes blog.
 I use [Jekyll](http://jekyllrb.com/) to generate the static HTML pages and post of the blog.
-You can read it [here](http://syymza.github.io/).
+You can read it [here](http://www.betterpixels.co.uk).
 
 ## License
 

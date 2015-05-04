@@ -2,9 +2,10 @@
 layout: page
 title: Welcome
 tagline: The homepage
+
 ---
 
-##Recent Projects:
+##Recent Projects
 
 <div class="row">
   <div class="col-sm-6 col-md-6">
