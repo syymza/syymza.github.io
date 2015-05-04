@@ -13,6 +13,14 @@ tags: ['code', 'io.js', 'es6', 'back-end']
 If you are like me, you spend a lot of time on [Hacker News](http://news.ycombinator.com). Surely, a lot of the articles posted are interesting, but of particular attention for a Javascript developer are the ones about Javascript.
 Never to miss a single one of these posts, I have decided to create a small tool that sends me and email for each new post containing the substrings *JS* or *Javascript* in the title.
 
+<div class="row">
+  <div class="col-md-6">
+    <div class="thumbnail">
+      <img src="/resources/js-on-hn.png" alt="JS on HN">
+    </div>
+  </div>
+</div>
+
 ________
 
 ##Tools
