@@ -4,7 +4,7 @@ title: "Get Notified When Someone Posts An Article From About Javascript on Hack
 description: "Get Notified When Someone Posts An Article From About Javascript on Hacker News Using io.js, Firebase and Email.js"
 tagline: A project for HN fanatics
 category: Projects
-tags: ['code', 'io.js', 'es6', 'back-end']
+tags: ['code', 'io.js', 'es6', 'back-end', 'javascript']
 image: js-on-hn.png
 
 ---
@@ -320,6 +320,30 @@ This is the entire code for the index.js file:
     }
     
 You can also find the code [on Github](https://github.com/syymza/js-on-hn-emailer), where you can fork it and improve it if you wish.
+
+##Update
+I have decided I wanted extend the list of terms I wanted to  "subscribe" to. Hence, I have created an array of terms I want to test against and redefined the definition of `regEx` with:
+
+{% highlight javascript %}
+
+//An array of terms I want to subscribe to:
+let terms = [
+    'js',
+    'javascript',
+    'react',
+    'angular',
+    'ember',
+    'backbone',
+    'jquery'
+];
+
+//Build a RegEx using the terms defined
+let regEx = new RegExp(terms.join('|'), 'i');
+
+{% endhighlight %}
+
+Now I will receive an email also when a new post about one of my favorite Javascript frameworks is posted.
+
 
 ________ 
 
