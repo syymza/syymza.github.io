@@ -321,6 +321,8 @@ This is the entire code for the index.js file:
     
 You can also find the code [on Github](https://github.com/syymza/js-on-hn-emailer), where you can fork it and improve it if you wish.
 
+_________
+
 ##Update
 I have decided I wanted extend the list of terms I wanted to  "subscribe" to. Hence, I have created an array of terms I want to test against and redefined the definition of `regEx` with:
 
