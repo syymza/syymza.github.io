@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Welcome
+title: Better Pixels - Coding Notes by Daniele Zanni
 tagline: The homepage
 
 ---
