@@ -4,7 +4,7 @@ title: "console.log('Hello World!');"
 author: Daniele Zanni
 subtitle: The first post
 category: Random
-header-img: "img/orange.png"
+header-img: "img/orange.jpg"
 tags: ['intro']
 ---
 

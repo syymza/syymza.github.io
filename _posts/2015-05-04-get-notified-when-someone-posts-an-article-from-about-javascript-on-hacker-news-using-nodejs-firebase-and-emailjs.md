@@ -4,7 +4,7 @@ title: "Get Notified When Someone Posts An Article From About Javascript on Hack
 author: Daniele Zanni
 subtitle: A project for HN fanatics
 category: Projects
-header-img: "img/grey.png"
+header-img: "img/green.jpg"
 tags: ['code', 'io.js', 'es6', 'back-end', 'javascript']
 
 ---

@@ -2,7 +2,7 @@
 layout: page
 title: "About"
 description: "This is what I do."
-header-img: "img/about-bg.png"
+header-img: "img/about-bg.jpg"
 ---
 
 My name is Daniele Zanni and I am a **Javascript full stack expert** based in London, UK.
