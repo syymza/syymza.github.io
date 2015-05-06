@@ -1,26 +1,22 @@
 ---
 layout: post
 title: "Get Notified When Someone Posts An Article From About Javascript on Hacker News Using io.js, Firebase and Email.js"
-description: "Get Notified When Someone Posts An Article From About Javascript on Hacker News Using io.js, Firebase and Email.js"
-tagline: A project for HN fanatics
+author: Daniele Zanni
+subtitle: A project for HN fanatics
 category: Projects
+header-img: "img/grey.png"
 tags: ['code', 'io.js', 'es6', 'back-end', 'javascript']
-image: js-on-hn.png
 
 ---
-{% include JB/setup %}
 
 ##Description
 If you are like me, you spend a lot of time on [Hacker News](http://news.ycombinator.com). Surely, a lot of the articles posted are interesting, but of particular attention for a Javascript developer are the ones about Javascript.
 Never to miss a single one of these posts, I have decided to create a small tool that sends me and email for each new post containing the substrings *JS* or *Javascript* in the title.
 
-<div class="row">
-  <div class="col-md-6">
-    <div class="thumbnail">
-      <img src="/resources/js-on-hn.png" alt="JS on HN">
-    </div>
-  </div>
-</div>
+<a href="#">
+    <img src="{{ site.baseurl }}/img/js-on-hn.png" alt="JS on Hacker News">
+</a>
+<span class="caption text-muted">Javascript posts on Hacker News are easy to miss.</span>
 
 ________
 
@@ -211,30 +207,34 @@ let server = email.server.connect({
 
 {% endhighlight %}
 
-Now we can create our `sendEmail` function according to the [Email.js documentation](https://github.com/eleith/emailjs) (sorry for the missing syntax highlighting but it looks like [Pygments](http://pygments.org/) does not yet support ES6 template strings yet):
+Now we can create our `sendEmail` function according to the [Email.js documentation](https://github.com/eleith/emailjs):
 
+{% highlight bash %}
 
-    function sendEmail(title, url) {
-    
-        let email = {
-            from: config.email,
-            to: config.email,
-            subject: `[JS on HN] ${title}`,
-            text: `A New Post About Javascript has been posted to Hacker News: ${title}\nRead it here: ${url}`,
-            attachment: [{
-                data: `<html>
-                            <div>
-                                <span>A New Post About Javascript has been posted to Hacker News:<span>
-                                <strong>${title}</strong>
-                            </div>
-                            <div>Read it here: ${url}</div>
-                        </html>`,
-                alternative:true
-            }]
-        };
-    
-        server.send(email, function(err, message) { console.log(err || message); });
-    }
+function sendEmail(title, url) {
+
+    let email = {
+        from: config.email,
+        to: config.email,
+        subject: `[JS on HN] ${title}`,
+        text: `A New Post About Javascript has been posted to Hacker News: ${title}\nRead it here: ${url}`,
+        attachment: [{
+            data: `<html>
+                        <div>
+                            <span>A New Post About Javascript has been posted to Hacker News:<span>
+                            <strong>${title}</strong>
+                        </div>
+                        <div>Read it here: ${url}</div>
+                    </html>`,
+            alternative:true
+        }]
+    };
+
+    server.send(email, function(err, message) { console.log(err || message); });
+}
+
+{% endhighlight %}
+
 
 Finally, the we only need to invoke our `sendEmail` when the `isAboutJs` variable is true, inside `filterInterestingPosts`:
 
@@ -255,69 +255,74 @@ That's all. Your application should be ready to be deployed on your favorite nod
 
 This is the entire code for the index.js file:
 
-    'use strict';
-    
-    let Firebase = require("firebase");
-    let email   = require("emailjs");
-    let config = require('./config');
-    
-    let server = email.server.connect({
-        user:     config.username,
-        password: config.password,
-        host:     "smtp.gmail.com", //Use your SMTP server if it is not Gmail
-        ssl:      true //This option also depends on your SMTP server
-    });
-    
-    
-    let newPostsRef = new Firebase("https://hacker-news.firebaseio.com/v0/newstories/0");
-    
-    newPostsRef.on("value", dealWithSinglePost);
-    
-    function dealWithSinglePost (snapshot) {
-        let postRef = new Firebase("https://hacker-news.firebaseio.com/v0/item/"+snapshot.val());
-        postRef.on('value', filterInterestingPosts);
-    
-        function filterInterestingPosts(postSnapshot) {
-            //Return if there is no actual valid data
-            if(!postSnapshot.val()) {
-                return;
-            }
-    
-            //If we have received some valid data, we unsubcribe from the post updates
-            postRef.off();
-    
-            let regEx = /(js|javascript)/i;
-            let title = postSnapshot.val().title;
-            let url = postSnapshot.val().url;
-            let isAboutJs = regEx.test(title);
-    
-            if (isAboutJs) {
-                sendEmail(title, url);
-            }
+{% highlight bash %}
+
+'use strict';
+
+let Firebase = require("firebase");
+let email   = require("emailjs");
+let config = require('./config');
+
+let server = email.server.connect({
+    user:     config.username,
+    password: config.password,
+    host:     "smtp.gmail.com", //Use your SMTP server if it is not Gmail
+    ssl:      true //This option also depends on your SMTP server
+});
+
+
+let newPostsRef = new Firebase("https://hacker-news.firebaseio.com/v0/newstories/0");
+
+newPostsRef.on("value", dealWithSinglePost);
+
+function dealWithSinglePost (snapshot) {
+    let postRef = new Firebase("https://hacker-news.firebaseio.com/v0/item/"+snapshot.val());
+    postRef.on('value', filterInterestingPosts);
+
+    function filterInterestingPosts(postSnapshot) {
+        //Return if there is no actual valid data
+        if(!postSnapshot.val()) {
+            return;
+        }
+
+        //If we have received some valid data, we unsubcribe from the post updates
+        postRef.off();
+
+        let regEx = /(js|javascript)/i;
+        let title = postSnapshot.val().title;
+        let url = postSnapshot.val().url;
+        let isAboutJs = regEx.test(title);
+
+        if (isAboutJs) {
+            sendEmail(title, url);
         }
     }
+}
+
+function sendEmail(title, url) {
+
+    let email = {
+        from: config.email,
+        to: config.email,
+        subject: `[JS on HN] ${title}`,
+        text: `A New Post About Javascript has been posted to Hacker News: ${title}\nRead it here: ${url}`,
+        attachment: [{
+            data: `<html>
+                      <div>
+                          <span>A New Post About Javascript has been posted to Hacker News:<span>
+                          <strong>${title}</strong>
+                      </div>
+                      <div>Read it here: ${url}</div>
+                  </html>`,
+            alternative:true
+        }]
+    };
+
+    server.send(email);
+}
     
-    function sendEmail(title, url) {
+{% endhighlight %}
     
-        let email = {
-            from: config.email,
-            to: config.email,
-            subject: `[JS on HN] ${title}`,
-            text: `A New Post About Javascript has been posted to Hacker News: ${title}\nRead it here: ${url}`,
-            attachment: [{
-                data: `<html>
-                          <div>
-                              <span>A New Post About Javascript has been posted to Hacker News:<span>
-                              <strong>${title}</strong>
-                          </div>
-                          <div>Read it here: ${url}</div>
-                      </html>`,
-                alternative:true
-            }]
-        };
-    
-        server.send(email);
-    }
     
 You can also find the code [on Github](https://github.com/syymza/js-on-hn-emailer), where you can fork it and improve it if you wish.
 
