@@ -328,16 +328,21 @@ I have decided I wanted extend the list of terms I wanted to  "subscribe" to. He
 
 {% highlight javascript %}
 
-//An array of terms I want to subscribe to:
+//An array of terms I want to subscribe to.
+//We want to match the 'js' string in any part of the word (e.g. Node.js, jsTree).
+//We want to add word boundaries to the other terms to limit false positives like 'Reactive' or 'Remember'
 let terms = [
-    'js',
-    'javascript',
-    'react',
-    'angular',
-    'ember',
-    'backbone',
-    'jquery'
-];
+    {term: 'js', fullWord: false},
+    {term: 'javascript', fullWord: true},
+    {term: 'react', fullWord: true},
+    {term: 'angular', fullWord: true},
+    {term: 'ember', fullWord: true},
+    {term: 'backbone', fullWord: true},
+    {term: 'jquery', fullWord: true}
+].map(function (t) {
+    const WORD_BOUNDARY = '\\b'; //Escape the \b special character for word boundary
+    return t.fullWord ? WORD_BOUNDARY + t.term + WORD_BOUNDARY : t.term;
+});
 
 //Build a RegEx using the terms defined
 let regEx = new RegExp(terms.join('|'), 'i');
