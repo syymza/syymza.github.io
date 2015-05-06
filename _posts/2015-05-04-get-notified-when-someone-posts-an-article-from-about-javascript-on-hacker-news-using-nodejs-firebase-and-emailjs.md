@@ -3,8 +3,10 @@ layout: post
 title: "Get Notified When Someone Posts An Article From About Javascript on Hacker News Using io.js, Firebase and Email.js"
 author: Daniele Zanni
 subtitle: A project for HN fanatics
+description: A project for HN fanatics
 category: Projects
 header-img: "img/green.jpg"
+image: "img/js-on-hn.png"
 tags: ['code', 'io.js', 'es6', 'back-end', 'javascript']
 
 ---

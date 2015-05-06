@@ -3,9 +3,11 @@ layout: post
 title: "console.log('Hello World!');"
 author: Daniele Zanni
 subtitle: The first post
+description: The first post
 category: Random
 header-img: "img/orange.jpg"
 tags: ['intro']
+
 ---
 
 This is the first post of this blog in which I aim to collect my coding notes and projects and I feel obliged to spend a couple of words talking about me.

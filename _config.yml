@@ -5,7 +5,10 @@ exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md", "
 highlighter: "pygments"
 
 title: Better Pixels
+description: Coding Notes by Daniele Zanni
+
 header-img: img/home-bg.jpg
+default-img: img/header.png
 
 email: info@betterpixels.co.uk
 

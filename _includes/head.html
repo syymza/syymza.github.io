@@ -32,9 +32,9 @@
     <meta content="{{ site.url }}/pages/about.html" property="article:author">
     {% endif %}
     {% if page.image %}
-    <meta content="{{ site.url }}/resources/{{ page.image }}" property="og:image">
+    <meta content="{{ site.url }}/{{ page.image }}" property="og:image">
     {% else %}
-    <meta content="{{ site.url }}/resources/logo-high-resolution.png" property="og:image">
+    <meta content="{{ site.url }}/{{ site.default-img }}" property="og:image">
     {% endif %}
     {% if page.categories %}
     {% for category in page.categories limit:1 %}
