@@ -60,6 +60,9 @@
 
 <!-- Analytics -->
 
+{% include is_production %}
+
+{% if is_production %}
 <script type="text/javascript">
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-4573836-10']);
@@ -71,3 +74,4 @@ _gaq.push(['_trackPageview']);
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 </script>
+{% endif %}
