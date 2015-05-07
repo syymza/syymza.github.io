@@ -1,3 +1,3 @@
 #TODO:
 
-*This list is oddly empty...*
+-[ ] Start to use bower
