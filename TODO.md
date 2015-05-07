@@ -1,3 +1,3 @@
 #TODO:
 
--[ ] Start to use bower
+- [ ] Start to use bower
