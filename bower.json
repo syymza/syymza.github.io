@@ -1,0 +1,20 @@
+{
+  "name": "syymza.github.io",
+  "version": "1.0.0",
+  "homepage": "http://www.betterpixels.co.uk",
+  "authors": [
+    "syymza <syymza@gmail.com>"
+  ],
+  "description": "Better Pixels",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4"
+  }
+}
