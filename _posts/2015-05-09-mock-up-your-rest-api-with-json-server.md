@@ -47,7 +47,9 @@ ___________
 - **[Node.js](https://nodejs.org/)**. *JSON Server* is an *npm module*, hence it requires node.
 - **Chrome >= v42**. Since Chrome 42, `fetch()` (*[here more](https://fetch.spec.whatwg.org/)*) is fully supported by Chrome. I can essentially send GET and POST easily for the Chrome console. Tools like **[Postman](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm?hl=en)** are now getting dusty on my machine.
 
-#Setup
+_________
+
+##Setup
 
 1.Install *JSON Server* as a global module:
 
@@ -99,7 +101,7 @@ That's all folks. You have your REST endpoint. Let's check with Chrome's *Develo
 
 __________
 
-#Testing the endpoint
+##Testing the endpoint
 
 In this paragraph, I will assume you are testing on your local machine. If you are connected through `SSH` to the machine you are deploying to, I assume you will be able to change any reference to `localhost` to the IP of that machine.
 
@@ -189,37 +191,38 @@ fetch('http://localhost:3000/tasks/1', {
       console.log('parsing failed: ', ex)
     });
     
- {% endhighlight %}
+{% endhighlight %}
    
    
- If we send another `GET` to `/task/1`,  we are going to see that the task is marked as done.
+If we send another `GET` to `/task/1`,  we are going to see that the task is marked as done.
+
+Before testing the `DELETE` request, we can also open the *db.json* file to verify that the changes are being kept up to date. You should in fact see the task you have added in the `tasks` property of the main JSON object.
+*JSON Server* is using **[lowdb](https://github.com/typicode/lowdb)** under the hood to achieve the synchronization.
+
+If you finally want to delete the task, send another request using `fetch()` passing `'delete'` in the method property:
+
+{% highlight javascript %}
+
+fetch('http://localhost:3000/tasks/1', {
+method: 'delete'
+}).then(function(response) {
+   return response.json()
+ }).then(function(json) {
+   console.log('parsed json: ', json)
+ }).catch(function(ex) {
+   console.log('parsing failed: ', ex)
+ });
  
- Before testing the `DELETE` request, we can also open the *db.json* file to verify that the changes are being kept up to date. You should in fact see the task you have added in the `tasks` property of the main JSON object.
- *JSON Server* is using **[lowdb](https://github.com/typicode/lowdb)** under the hood to achieve the synchronization.
- 
- If you finally want to delete the task, send another request using `fetch()` passing `'delete'` in the method property:
- 
- {% highlight javascript %}
- 
- fetch('http://localhost:3000/tasks/1', {
-   method: 'delete'
- }).then(function(response) {
-       return response.json()
-     }).then(function(json) {
-       console.log('parsed json: ', json)
-     }).catch(function(ex) {
-       console.log('parsing failed: ', ex)
-     });
-     
-  {% endhighlight %}
+{% endhighlight %}
   
-  Now if you fetch again the list of tasks, you should once again receive an empty array.
+Now if you fetch again the list of tasks, you should once again receive an empty array.
   
-  _______
+_______
   
-  ##Conclusions
-  
- This is just a simple demo using *JSON Server* and the structure of our tasks was quite simple. You can do a lot more. For instance, you could use pagination, you can sort elements and you can make full-text searches.
- Just have a look at the *JSON Server Github repository* where you will find the documentation and some examples.
- 
- More importantly, you will not have any excuse to procrastinate: you can immediately start to create a new application, even if you do not have the Back End API ready yet.
+
+##Conclusions
+
+This is just a simple demo using *JSON Server* and the structure of our tasks was quite simple. You can do a lot more. For instance, you could use pagination, you can sort elements and you can make full-text searches.
+Just have a look at the *JSON Server Github repository* where you will find the documentation and some examples.
+
+More importantly, you will not have any excuse to procrastinate: you can immediately start to create a new application, even if you do not have the Back End API ready yet.
