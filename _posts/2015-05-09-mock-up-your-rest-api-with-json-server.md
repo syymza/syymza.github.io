@@ -223,6 +223,6 @@ _______
 ##Conclusions
 
 This is just a simple demo using *JSON Server* and the structure of our tasks was quite simple. You can do a lot more. For instance, you could use pagination, you can sort elements and you can make full-text searches.
-Just have a look at the *JSON Server Github repository* where you will find the documentation and some examples.
+Just have a look at the *[JSON Server Github repository](https://github.com/typicode/json-server)* where you will find the documentation and some examples.
 
 More importantly, you will not have any excuse to procrastinate: you can immediately start to create a new application, even if you do not have the Back End API ready yet.
