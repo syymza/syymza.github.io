@@ -13,4 +13,4 @@ I am a believer in **TDD** (Test Driven Development) and **CI** (Continuous Inte
 
 At work, I love to build single page applications, breaking and fixing Javascript libraries, playing with **RESTful APIs** and writing **responsive web  applications** using **accessible HTML**.
 
-If you wish to contact me, please drop me an email at *`info@dzanni.com`*.
+If you wish to contact me, please drop me an email at *`info@betterpixels.co.uk`*.
