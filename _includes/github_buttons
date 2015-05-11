@@ -1,0 +1,11 @@
+{% if page.repo %}
+<div class="row">
+    <div class="col-xs-2 col-xs-offset-4">
+        <a class="github-button" href="https://github.com/{{ site.github_username }}/{{ page.repo }}" data-icon="octicon-star" data-style="mega" data-count-href="/{{ site.github_username }}/{{ page.repo }}/stargazers" data-count-api="/repos/{{ site.github_username }}/{{ page.repo }}#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star {{ site.github_username }}/{{ page.repo }} on GitHub">Star</a>
+    </div>
+    <div class="col-xs-2">
+        <a class="github-button" href="https://github.com/{{ site.github_username }}/{{ page.repo }}/fork" data-icon="octicon-git-branch" data-style="mega" data-count-href="/{{ site.github_username }}/{{ page.repo }}/network" data-count-api="/repos/{{ site.github_username }}/{{ page.repo }}#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork {{ site.github_username }}/{{ page.repo }} on GitHub">Fork</a>
+    </div>
+</div>
+<hr>
+{% endif %}

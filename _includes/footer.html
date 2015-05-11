@@ -68,6 +68,13 @@
 <!-- Custom Theme JavaScript -->
 <script src="{{ "/js/clean-blog.min.js " | prepend: site.baseurl }}"></script>
 
+<!-- Github -->
+{% if page.repo %}
+
+<script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
+
+{% endif %}
+
 <!-- Analytics -->
 
 {% include is_production %}

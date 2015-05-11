@@ -7,6 +7,7 @@ description: A project for HN fanatics
 category: Projects
 header-img: "img/green.jpg"
 image: "img/js-on-hn.png"
+repo: "js-on-hn-emailer"
 tags: ['code', 'io.js', 'es6', 'back-end', 'javascript']
 
 ---
