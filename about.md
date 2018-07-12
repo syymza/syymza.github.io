@@ -5,7 +5,7 @@ description: "This is what I do."
 header-img: "img/about-bg.jpg"
 ---
 
-My name is Daniele Zanni and I am a **Javascript full stack expert** based in London, UK.
+My name is Daniele Zanni and I am a **Javascript full stack expert** based in [Sydney, Australia](https://www.thenerdwiththebackpack.com/).
 
 My focus is on the **Front End Development** of **scalable applications** and I am a big fan of the **[MEAN stack](http://blog.mongodb.org/post/49262866911/the-mean-stack-mongodb-expressjs-angularjs-and)** (MongoDB, ExpressJS, AngularJS, NodeJS).
 
