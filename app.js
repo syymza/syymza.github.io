@@ -41,6 +41,7 @@ const mix = (a, b, t) => a + (b - a) * t;
 const smooth = (a, b, n) => {const t = clamp((n - a) / (b - a));return t * t * (3 - 2 * t);};
 let off = media.matches, span = 1, width = innerWidth, height = innerHeight;
 let current = 0, target = 0, active = -1, frame = 0, last = 0;
+let destination = null;
 function paint(p) {
   const phone = width < 701;
   let next = 0, strongest = -1;
@@ -82,6 +83,10 @@ function sample(time) {
   current += (target-current)*(1-Math.exp(-elapsed/64));
   if(Math.abs(target-current)<.00025) current=target;
   render(current);
+  if(destination && Math.abs(scrollY/span-destination.raw)<.002 && Math.abs(current-destination.raw)<.002){
+    const scene=destination.scene;destination=null;
+    scene?.focus({preventScroll:true});
+  }
   if(current!==target) frame=requestAnimationFrame(sample);else last=0;
 }
 function schedule(){if(!off&&!frame) frame=requestAnimationFrame(sample);}
@@ -89,37 +94,58 @@ function measure(preserve=true){
   if(off)return;
   const prior=clamp(scrollY/span,0,maxScroll), w=stage.clientWidth,h=stage.clientHeight;
   if(preserve&&w===width&&h===height)return;
+  const visual=current;
+  destination=null;
   width=w;height=h;span=h*(w<701?1.28:1.38);
   track.style.height=`${h+span*maxScroll}px`;
   if(preserve)scrollTo({top:prior*span,behavior:'instant'});
-  current=target=clamp(scrollY/span,0,maxScroll);render(current);
+  target=clamp(scrollY/span,0,maxScroll);
+  current=preserve?visual:target;render(current);schedule();
 }
 function staticIndex(){let best=0,distance=Infinity;scenes.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top-height*.2);if(d<distance){best=i;distance=d;}});return best;}
 function setMode(value,initial=false){
   const index=initial?0:off?staticIndex():active;
   off=value;cancelAnimationFrame(frame);frame=0;last=0;root.classList.toggle('cinematic',!off);
+  destination=null;
   button.hidden=false;button.textContent=off?'Static view':'Motion on';button.setAttribute('aria-pressed',String(off));button.setAttribute('aria-label',off?'Enable immersive scrolling':'Use static page view');
   if(off){track.style.height='';scenes.forEach(s=>{s.inert=false;s.removeAttribute('aria-hidden');s.classList.remove('active','drawn');s.style.removeProperty('--alpha');});[...copies,...arts].filter(Boolean).forEach(c=>{c.style.transform='';c.style.opacity='';});showCity(Math.max(0,shownCity));if(!initial)scenes[Math.max(0,index)].scrollIntoView({behavior:'instant'});}
   else{measure(false);if(!initial){current=target=rawAt(Math.max(0,index));scrollTo({top:current*span,behavior:'instant'});render(current);}}
 }
-function navigate(hash,push=false){
+function moveTo(raw,scene=null,animate=true){
+  if(animate){
+    destination={raw,scene};
+    scrollTo({top:raw*span,behavior:'smooth'});schedule();
+  }else{
+    cancelAnimationFrame(frame);frame=0;last=0;destination=null;
+    current=target=raw;scrollTo({top:raw*span,behavior:'instant'});render(current);
+    scene?.focus({preventScroll:true});
+  }
+}
+function navigate(hash,push=false,animate=true){
   const scene=document.getElementById(hash.slice(1));if(!scene)return;
   const index=scenes.indexOf(scene);if(index<0)return;
   if(push)history.pushState(null,'',hash);
-  if(off)scene.scrollIntoView({behavior:'instant'});
-  else{cancelAnimationFrame(frame);frame=0;last=0;current=target=rawAt(index);scrollTo({top:current*span,behavior:'instant'});render(current);}
-  scene.tabIndex=-1;scene.focus({preventScroll:true});
+  scene.tabIndex=-1;
+  if(off){scene.scrollIntoView({behavior:'instant'});scene.focus({preventScroll:true});}
+  else moveTo(rawAt(index),scene,animate);
 }
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();navigate(a.getAttribute('href'),true);}));
 cityButtons.forEach((button,index)=>button.addEventListener('click',()=>{
   if(off){showCity(index);return;}
-  cancelAnimationFrame(frame);frame=0;last=0;
-  current=target=2+index/5*2;
-  scrollTo({top:current*span,behavior:'instant'});render(current);
+  moveTo(2+index/5*2);
 }));
+function interrupt(){
+  if(!destination)return;
+  destination=null;
+  scrollTo({top:scrollY,behavior:'instant'});
+}
+addEventListener('wheel',interrupt,{passive:true});
+addEventListener('touchstart',interrupt,{passive:true});
+addEventListener('pointerdown',interrupt,{passive:true});
+addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' ','Tab','Escape'].includes(e.key))interrupt();});
 button.addEventListener('click',()=>setMode(!off));
 media.addEventListener('change',e=>setMode(e.matches));
 addEventListener('scroll',schedule,{passive:true});addEventListener('resize',()=>measure(),{passive:true});
 addEventListener('popstate',()=>navigate(location.hash||'#intro'));
 document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;last=0;}else schedule();});
-setMode(off,true);if(location.hash)requestAnimationFrame(()=>navigate(location.hash));
+setMode(off,true);if(location.hash)requestAnimationFrame(()=>navigate(location.hash,false,false));
