@@ -9,6 +9,30 @@ const nav = [...document.querySelectorAll('.scene-nav a')];
 const button = document.querySelector('#motion-toggle');
 const arts = scenes.map(scene => scene.querySelector('.art'));
 const maxScene = scenes.length - 1;
+const maxScroll = maxScene + 2;
+const cityButtons = [...document.querySelectorAll('[data-city]')];
+const cityDetails = [...document.querySelectorAll('[data-chapter]')];
+const mapStops = [...document.querySelectorAll('[data-stop]')];
+const mapRings = [...document.querySelectorAll('[data-ring]')];
+const mapLegs = [...document.querySelectorAll('[data-leg]')];
+const mapInset = document.querySelector('[data-inset]');
+const rawAt = index => index <= 2 ? index : index + 2;
+const sceneAt = raw => raw < 2 ? raw : raw <= 4 ? 2 : raw - 2;
+let shownCity = -1, cityWasStatic = null;
+function showCity(index) {
+  if (shownCity === index && cityWasStatic === off) return;
+  shownCity = index; cityWasStatic = off;
+  cityButtons.forEach((b,i)=>b.setAttribute('aria-pressed',String(i === index)));
+  cityDetails.forEach((d,i)=>d.hidden = !off && i !== index);
+  mapStops.forEach(s=>s.style.opacity=String(off || Number(s.dataset.stop)<=index ? 1 : 0));
+  mapRings.forEach(s=>s.style.opacity=String(!off && Number(s.dataset.ring)===index ? 1 : 0));
+  mapLegs.forEach(s=>s.style.opacity=String(off || Number(s.dataset.leg)<=index ? 1 : 0));
+  mapInset.style.opacity=String(off || index>=4 ? 1 : 0);
+}
+function render(raw) {
+  paint(sceneAt(raw));
+  showCity(Math.round(clamp((raw-2)/2)*5));
+}
 const count = document.querySelector('#scene-count');
 const hint = document.querySelector('#scroll-hint');
 const progressBar = document.querySelector('#progress');
@@ -47,46 +71,52 @@ function paint(p) {
     scenes.forEach((scene, i) => {scene.inert = i !== active;scene.setAttribute('aria-hidden',String(i !== active));scene.classList.toggle('active',i === active);});
     nav.forEach((link,i) => {if (i === active) link.setAttribute('aria-current','true');else link.removeAttribute('aria-current');});
     count.textContent = `0${active + 1} / ${String(scenes.length).padStart(2,'0')}`;
-    hint.textContent = active === maxScene ? 'What’s next?' : 'Scroll to explore';
+    hint.textContent = active === maxScene ? 'What’s next?' : active === 2 ? 'Scroll through the places' : 'Scroll to explore';
   }
   progressBar.style.transform = `scaleX(${p/maxScene})`;
 }
 function sample(time) {
   frame = 0;if(off) return;
-  target = clamp(scrollY/span,0,maxScene);
+  target = clamp(scrollY/span,0,maxScroll);
   const elapsed = last ? Math.min(64,time-last) : 16.67;last = time;
   current += (target-current)*(1-Math.exp(-elapsed/64));
   if(Math.abs(target-current)<.00025) current=target;
-  paint(current);
+  render(current);
   if(current!==target) frame=requestAnimationFrame(sample);else last=0;
 }
 function schedule(){if(!off&&!frame) frame=requestAnimationFrame(sample);}
 function measure(preserve=true){
   if(off)return;
-  const prior=clamp(scrollY/span,0,maxScene), w=stage.clientWidth,h=stage.clientHeight;
+  const prior=clamp(scrollY/span,0,maxScroll), w=stage.clientWidth,h=stage.clientHeight;
   if(preserve&&w===width&&h===height)return;
   width=w;height=h;span=h*(w<701?1.28:1.38);
-  track.style.height=`${h+span*maxScene}px`;
+  track.style.height=`${h+span*maxScroll}px`;
   if(preserve)scrollTo({top:prior*span,behavior:'instant'});
-  current=target=clamp(scrollY/span,0,maxScene);paint(current);
+  current=target=clamp(scrollY/span,0,maxScroll);render(current);
 }
 function staticIndex(){let best=0,distance=Infinity;scenes.forEach((s,i)=>{const d=Math.abs(s.getBoundingClientRect().top-height*.2);if(d<distance){best=i;distance=d;}});return best;}
 function setMode(value,initial=false){
   const index=initial?0:off?staticIndex():active;
   off=value;cancelAnimationFrame(frame);frame=0;last=0;root.classList.toggle('cinematic',!off);
   button.hidden=false;button.textContent=off?'Static view':'Motion on';button.setAttribute('aria-pressed',String(off));button.setAttribute('aria-label',off?'Enable immersive scrolling':'Use static page view');
-  if(off){track.style.height='';scenes.forEach(s=>{s.inert=false;s.removeAttribute('aria-hidden');s.classList.remove('active','drawn');s.style.removeProperty('--alpha');});[...copies,...arts].filter(Boolean).forEach(c=>{c.style.transform='';c.style.opacity='';});if(!initial)scenes[Math.max(0,index)].scrollIntoView({behavior:'instant'});}
-  else{measure(false);if(!initial){current=target=Math.max(0,index);scrollTo({top:current*span,behavior:'instant'});paint(current);}}
+  if(off){track.style.height='';scenes.forEach(s=>{s.inert=false;s.removeAttribute('aria-hidden');s.classList.remove('active','drawn');s.style.removeProperty('--alpha');});[...copies,...arts].filter(Boolean).forEach(c=>{c.style.transform='';c.style.opacity='';});showCity(Math.max(0,shownCity));if(!initial)scenes[Math.max(0,index)].scrollIntoView({behavior:'instant'});}
+  else{measure(false);if(!initial){current=target=rawAt(Math.max(0,index));scrollTo({top:current*span,behavior:'instant'});render(current);}}
 }
 function navigate(hash,push=false){
   const scene=document.getElementById(hash.slice(1));if(!scene)return;
   const index=scenes.indexOf(scene);if(index<0)return;
   if(push)history.pushState(null,'',hash);
   if(off)scene.scrollIntoView({behavior:'instant'});
-  else{cancelAnimationFrame(frame);frame=0;last=0;current=target=index;scrollTo({top:index*span,behavior:'instant'});paint(index);}
+  else{cancelAnimationFrame(frame);frame=0;last=0;current=target=rawAt(index);scrollTo({top:current*span,behavior:'instant'});render(current);}
   scene.tabIndex=-1;scene.focus({preventScroll:true});
 }
 document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();navigate(a.getAttribute('href'),true);}));
+cityButtons.forEach((button,index)=>button.addEventListener('click',()=>{
+  if(off){showCity(index);return;}
+  cancelAnimationFrame(frame);frame=0;last=0;
+  current=target=2+index/5*2;
+  scrollTo({top:current*span,behavior:'instant'});render(current);
+}));
 button.addEventListener('click',()=>setMode(!off));
 media.addEventListener('change',e=>setMode(e.matches));
 addEventListener('scroll',schedule,{passive:true});addEventListener('resize',()=>measure(),{passive:true});
