@@ -10,7 +10,7 @@ A personal portfolio about software, engineering leadership and curiosity, told 
 
 Scroll through the story or use the chapter navigation. In Places, choose Milan, Oulu, London, Sydney, Dubai or Abu Dhabi to follow the journey. Use **Motion on** to switch to a static page; the system's reduced-motion preference also selects that view. Keyboard navigation and a skip link provide another way through the story.
 
-The site uses plain HTML, CSS, JavaScript and inline SVG. There is no build step, dependency install, backend, analytics or runtime API. Research, patent, LinkedIn and GitHub links open external sites when followed.
+The Swiss workshop design uses self-hosted Archivo, charcoal, warm white and vermilion. The site uses plain HTML, CSS, JavaScript and inline SVG. There is no build step, dependency install, backend, analytics or runtime API. Chapter and city links scroll smoothly; wheel, touch or keyboard input can interrupt them. Research, patent, LinkedIn and GitHub links open external sites when followed.
 
 ## Run locally
 
@@ -43,6 +43,7 @@ For changes to the site, check all six chapters and city selections at desktop a
 | `style.css` | Responsive layouts, typography, motion and static view |
 | `app.js` | Scroll transitions, navigation, city selection and accessibility state |
 | `favicon.svg` | Site icon |
+| `assets/fonts/` | Subset Archivo WOFF2, original font licence and generation notes |
 | `scripts/check-site.py` | Offline local-reference checks |
 
 The map uses clipped [Natural Earth](https://www.naturalearthdata.com/about/terms-of-use/) 1:110m land data, which is public domain. City markers and coastlines share an equirectangular projection. Connecting lines show residence order, not flight routes. The patent illustration is a redrawing of Figure 1 from [US11301538B1](https://patents.google.com/patent/US11301538B1/en).
@@ -51,4 +52,4 @@ The map uses clipped [Natural Earth](https://www.naturalearthdata.com/about/term
 
 **All changes require a PR; do not push directly to `main`.** See [CONTRIBUTING.md](CONTRIBUTING.md). GitHub Pages publishes `main` from `/ (root)` at the link above. The validation workflow runs on PRs and `main`; it does not deploy. Merging requires maintainer approval and can publish changes.
 
-No license has been selected for this project. The map data's public-domain status does not license the rest of the repository.
+No license has been selected for this project. The map data's public-domain status does not license the rest of the repository. Archivo is distributed separately under the [SIL Open Font License](assets/fonts/OFL.txt).
