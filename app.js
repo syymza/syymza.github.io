@@ -1,198 +1,202 @@
 'use strict';
 const media = matchMedia('(prefers-reduced-motion: reduce)');
-let motionOff = media.matches;
+const root = document.documentElement;
+const track = document.querySelector('.story-track');
+const stage = document.querySelector('.fixed-stage');
+const beats = [...document.querySelectorAll('.beat')];
+const chapterLinks = [...document.querySelectorAll('.chapter-nav a')];
 const motionButton = document.querySelector('#motion-toggle');
-const sculpture = document.querySelector('.sculpture');
-const group = document.querySelector('#ribbon-lines');
+const form = document.querySelector('.shared-form');
+const number = document.querySelector('#scene-number');
+const progressFill = document.querySelector('#progress-fill');
+const scrollLabel = document.querySelector('#scroll-label');
+const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+const mix = (a, b, t) => a + (b - a) * t;
+function smooth(a, b, value) { const t = clamp((value - a) / (b - a)); return t * t * (3 - 2 * t); }
+let motionOff = media.matches;
+let span = 1, current = 0, target = 0, activeIndex = -1, frame = 0;
 const ellipses = [];
 for (let i = 0; i < 36; i++) {
   const ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
   ellipse.setAttribute('cx', '250'); ellipse.setAttribute('cy', '250');
-  ellipse.setAttribute('rx', String(60 + i * 3.15)); ellipse.setAttribute('ry', '185');
-  group.append(ellipse); ellipses.push(ellipse);
+  document.querySelector('#ribbon-lines').append(ellipse); ellipses.push(ellipse);
 }
-let pointer = 0, current = 0, frame = 0;
-function paint() {
-  current += (pointer - current) * .045;
-  ellipses.forEach((ellipse, i) => ellipse.setAttribute('transform', `rotate(${i * 5 + current} 250 250)`));
-  frame = Math.abs(pointer - current) > .01 && !motionOff ? requestAnimationFrame(paint) : 0;
-}
-paint();
-sculpture.addEventListener('pointermove', event => {
-  if (motionOff || event.pointerType === 'touch') return;
-  const bounds = sculpture.getBoundingClientRect();
-  pointer = ((event.clientX - bounds.left) / bounds.width - .5) * 35;
-  if (!frame) frame = requestAnimationFrame(paint);
-});
-sculpture.addEventListener('pointerleave', () => { pointer = 0; if (!frame && !motionOff) frame = requestAnimationFrame(paint); });
 const wave = document.querySelector('.wave');
 for (let i = 0; i < 39; i++) {
   const bar = document.createElement('i');
-  bar.style.setProperty('--height', `${15 + (Math.sin(i * .7) * .5 + .5) * Math.sin(Math.PI * i / 38) * 100}px`);
-  bar.style.setProperty('--delay', `${-i * .07}s`); wave.append(bar);
+  bar.style.setProperty('--height', `${14 + (Math.sin(i * .7) * .5 + .5) * Math.sin(Math.PI * i / 38) * 110}px`);
+  bar.style.setProperty('--delay', `${-i * .065}s`); wave.append(bar);
 }
+document.querySelectorAll('.js-control').forEach(element => { element.hidden = false; });
 const voiceButton = document.querySelector('#voice-demo');
-let voiceTimer;
+let voiceTimer = 0;
 function stopVoice() {
-  clearTimeout(voiceTimer); document.querySelector('.voice-preview').classList.remove('playing');
-  voiceButton.setAttribute('aria-pressed', 'false'); voiceButton.innerHTML = 'Animate the idea <span>▶</span>';
+  clearTimeout(voiceTimer); document.querySelector('.voice-art').classList.remove('playing');
+  voiceButton.setAttribute('aria-pressed', 'false'); voiceButton.innerHTML = 'Animate visual <span aria-hidden="true">▶</span>';
 }
 voiceButton.addEventListener('click', () => {
   if (voiceButton.getAttribute('aria-pressed') === 'true') return stopVoice();
   voiceButton.setAttribute('aria-pressed', 'true');
-  voiceButton.innerHTML = motionOff ? 'Waveform shown <span>✓</span>' : 'Pause the sketch <span>Ⅱ</span>';
-  if (!motionOff) document.querySelector('.voice-preview').classList.add('playing');
+  voiceButton.innerHTML = motionOff ? 'Waveform shown <span aria-hidden="true">✓</span>' : 'Pause visual <span aria-hidden="true">Ⅱ</span>';
+  if (!motionOff) document.querySelector('.voice-art').classList.add('playing');
   voiceTimer = setTimeout(stopVoice, 6000);
 });
 const focusButton = document.querySelector('#focus-demo');
-let focusTimer;
+let focusTimer = 0;
 focusButton.addEventListener('click', () => {
-  clearTimeout(focusTimer); document.querySelector('.focus-preview').classList.add('activated');
+  clearTimeout(focusTimer); document.querySelector('.focus-art').classList.add('activated');
   focusButton.querySelector('small').textContent = 'Session found. Right where you left it.';
-  document.querySelector('#focus-status').textContent = 'Illustration: the matching session is now highlighted.';
+  document.querySelector('#focus-status').textContent = 'Illustration: the matching session is highlighted.';
   focusTimer = setTimeout(() => {
-    document.querySelector('.focus-preview').classList.remove('activated');
+    document.querySelector('.focus-art').classList.remove('activated');
     focusButton.querySelector('small').textContent = 'Preview session highlight';
   }, 4000);
 });
-function setMotion(value) {
-  motionOff = value; document.documentElement.classList.toggle('motion-off', value);
+// Each camera is an original composition. One visual persists across the story.
+// x/y are viewport percentages, followed by scale, yaw, roll, opacity and line twist.
+const desktopCameras = [
+  [77,52,1,0,-12,.95,0], [70,51,1.22,52,12,.82,55],
+  [76,50,.95,-35,-20,.65,105], [83,53,.8,65,10,.14,155],
+  [76,52,.75,-15,0,.025,195], [75,52,.7,35,0,.02,235],
+  [77,52,.8,-30,20,.025,275], [85,62,1.25,60,20,.12,315],
+  [81,50,1.08,-35,-16,.28,360]
+];
+const mobileCameras = [
+  [50,64,.73,0,-12,.9,0], [58,66,1.05,45,18,.74,55],
+  [61,67,.9,-35,-18,.6,105], [88,61,.8,60,8,.07,155],
+  [50,65,.7,0,0,.015,195], [50,65,.7,35,0,.015,235],
+  [50,65,.7,-30,20,.015,275], [75,75,1.1,60,20,.075,315],
+  [70,67,.9,-35,-16,.12,360]
+];
+function drawCamera(progress) {
+  const cameras = innerWidth < 701 ? mobileCameras : desktopCameras;
+  const i = Math.min(cameras.length - 2, Math.floor(progress));
+  const t = smooth(0, 1, progress - i);
+  const camera = cameras[i].map((value, n) => mix(value, cameras[i + 1][n], t));
+  form.style.left = `${camera[0]}%`; form.style.top = `${camera[1]}%`;
+  form.style.transform = `translate(-50%,-50%) perspective(1200px) scale(${camera[2]}) rotateY(${camera[3]}deg) rotateZ(${camera[4]}deg)`;
+  form.style.opacity = camera[5];
+  ellipses.forEach((ellipse, n) => {
+    ellipse.setAttribute('rx', String(61 + n * 3.2 + Math.sin(progress * .7 + n * .12) * 8));
+    ellipse.setAttribute('ry', String(180 + Math.sin(progress * .5) * 10));
+    ellipse.setAttribute('transform', `rotate(${n * 5 + camera[6]} 250 250)`);
+  });
+}
+function paint(progress) {
+  const nextActive = clamp(Math.round(progress), 0, beats.length - 1);
+  if (activeIndex !== nextActive) {
+    activeIndex = nextActive; stopVoice();
+    number.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(beats.length).padStart(2, '0')}`;
+    scrollLabel.textContent = activeIndex === beats.length - 1 ? 'Keep asking why' : 'Scroll to continue';
+    chapterLinks.forEach((link, i) => {
+      if (i === Number(beats[activeIndex].dataset.chapter)) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  const mobile = innerWidth < 701;
+  beats.forEach((beat, index) => {
+    const local = progress - index;
+    const enter = smooth(-.48, -.015, local);
+    const exit = smooth(.17, .73, local);
+    const alpha = enter * (1 - exit);
+    const visualEnter = smooth(-.55, 0, local);
+    const visualExit = smooth(.28, .85, local);
+    const visualAlpha = visualEnter * (1 - visualExit);
+    const drawn = alpha > .002 || visualAlpha > .002;
+    beat.classList.toggle('is-drawn', drawn);
+    beat.classList.toggle('is-active', index === activeIndex);
+    beat.style.opacity = '1';
+    beat.style.setProperty('--scene-opacity', String(alpha));
+    beat.inert = index !== activeIndex;
+    beat.setAttribute('aria-hidden', String(index !== activeIndex));
+    if (!drawn) return;
+    const copy = beat.querySelector('.beat-copy');
+    const incoming = 1 - enter;
+    const x = mobile ? 0 : exit * Math.min(innerWidth * .22, 310);
+    const y = incoming * 75 + exit * (mobile ? innerHeight * .17 : -100);
+    const z = -incoming * 260 - exit * 580;
+    const scale = mix(.76, 1, enter) * mix(1, .3, exit);
+    copy.style.transform = `perspective(1400px) translate3d(${x}px,${y}px,${z}px) scale(${scale}) rotateX(${incoming * -9 + exit * 12}deg)`;
+    copy.style.opacity = String(alpha);
+    const visual = beat.querySelector('.beat-visual');
+    if (visual) {
+      const incomingVisual = 1 - visualEnter;
+      const visualScale = mix(.22, 1, visualEnter) * mix(1, .3, visualExit);
+      visual.style.transform = `perspective(1200px) translate3d(${visualExit * -80}px,${incomingVisual * 170 - visualExit * 60}px,${-incomingVisual * 650 - visualExit * 250}px) scale(${visualScale}) rotateY(${incomingVisual * -22 + visualExit * 15}deg)`;
+      visual.style.opacity = String(visualAlpha);
+    }
+  });
+  progressFill.style.transform = `scaleX(${progress / (beats.length - 1)})`;
+  drawCamera(progress);
+}
+function sample() {
+  frame = 0;
+  if (motionOff) return;
+  target = clamp(scrollY / span, 0, beats.length - 1);
+  if (Math.abs(target - Math.round(target)) * span < 2) target = Math.round(target);
+  current += (target - current) * .23;
+  if (Math.abs(target - current) < .0004) current = target;
+  paint(current);
+  if (current !== target) frame = requestAnimationFrame(sample);
+}
+function schedule() { if (!motionOff && !frame) frame = requestAnimationFrame(sample); }
+function measure(preserve = true) {
+  if (motionOff) return;
+  const previous = current;
+  span = stage.clientHeight * (innerWidth < 701 ? .91 : .94);
+  track.style.height = `${stage.clientHeight + span * (beats.length - 1)}px`;
+  if (preserve) scrollTo({ top: previous * span, behavior: 'instant' });
+  current = target = clamp(scrollY / span, 0, beats.length - 1);
+  if (Math.abs(target - Math.round(target)) * span < 2) target = Math.round(target); paint(current);
+}
+function staticIndex() {
+  let best = 0, distance = Infinity;
+  beats.forEach((beat, i) => { const d = Math.abs(beat.getBoundingClientRect().top - innerHeight * .2); if (d < distance) { distance = d; best = i; } });
+  return best;
+}
+function setMode(value, initial = false) {
+  const index = initial ? 0 : motionOff ? staticIndex() : activeIndex;
+  motionOff = value; cancelAnimationFrame(frame); frame = 0; stopVoice();
+  root.classList.toggle('cinematic', !value);
   motionButton.textContent = value ? 'Motion: off' : 'Motion: on';
   motionButton.setAttribute('aria-pressed', String(value));
-  if (value) { cancelAnimationFrame(frame); frame = 0; pointer = current = 0; paint(); stopVoice(); }
-}
-motionButton.addEventListener('click', () => setMotion(!motionOff));
-media.addEventListener('change', event => setMotion(event.matches));
-setMotion(motionOff);
-document.addEventListener('visibilitychange', () => { if (document.hidden) stopVoice(); });
-
-// Explicit project selection gives each small project a complete presentation stage.
-const projectTabs = [...document.querySelectorAll('.project-selector [role=tab]')];
-const panels = [...document.querySelectorAll('.projects > .project')];
-const selector = document.querySelector('.project-selector');
-const projectGroup = document.querySelector('.projects');
-let activeProject = 0;
-function selectProject(index, focus = false) {
-  stopVoice();
-  activeProject = (index + panels.length) % panels.length;
-  projectTabs.forEach((tab, i) => {
-    tab.setAttribute('aria-selected', String(i === activeProject));
-    tab.tabIndex = i === activeProject ? 0 : -1;
-    panels[i].hidden = i !== activeProject;
-  });
-  if (focus) projectTabs[activeProject].focus({ preventScroll: true });
-  if (!motionOff) {
-    const panel = panels[activeProject];
-    panel.getAnimations().forEach(animation => animation.cancel());
-    panel.animate([
-      { opacity: 0, transform: 'perspective(1200px) translate3d(35px,25px,-100px) rotateY(-5deg)' },
-      { opacity: 1, transform: 'perspective(1200px) translate3d(0,0,0) rotateY(0deg)' }
-    ], { duration: 700, easing: 'cubic-bezier(.18,.75,.25,1)' });
-  }
-  requestAnimationFrame(() => measureScenes());
-}
-if (selector && projectTabs.length) {
-  selector.hidden = false; projectGroup.classList.add('enhanced');
-  projectTabs.forEach((tab, i) => {
-    tab.addEventListener('click', () => selectProject(i));
-    tab.addEventListener('keydown', event => {
-      const targets = { ArrowRight: activeProject + 1, ArrowLeft: activeProject - 1, Home: 0, End: panels.length - 1 };
-      if (event.key in targets) { event.preventDefault(); selectProject(targets[event.key], true); }
+  motionButton.setAttribute('aria-label', value ? 'Motion off. Enable fixed-stage presentation.' : 'Motion on. Switch to static page view.');
+  if (value) {
+    track.style.height = '';
+    beats.forEach(beat => {
+      beat.inert = false; beat.removeAttribute('aria-hidden'); beat.classList.remove('is-active', 'is-drawn'); beat.style.removeProperty('opacity');
+      beat.querySelectorAll('.beat-copy,.beat-visual').forEach(element => { element.style.removeProperty('transform'); element.style.removeProperty('opacity'); });
     });
-  });
-  selectProject(0);
-}
-
-const scenes = [...document.querySelectorAll('.scene')];
-const chapterLinks = [...document.querySelectorAll('.scene-nav a')];
-const tracks = [];
-const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-let sceneFrame = 0;
-scenes.forEach((scene, index) => {
-  const track = document.createElement('div'); track.className = 'scene-track';
-  scene.before(track); track.append(scene);
-  const layers = [...scene.children].filter(element => !element.matches('.hero-meta,.hero-foot'));
-  if (scene.matches('.hero')) {
-    layers.length = 0; layers.push(scene.querySelector('.hero-copy'), scene.querySelector('.sculpture'));
+    if (!initial) requestAnimationFrame(() => beats[Math.max(0,index)].scrollIntoView({ behavior: 'instant', block: 'start' }));
+  } else {
+    measure(false);
+    if (!initial) { current = target = Math.max(0,index); scrollTo({ top: current * span, behavior: 'instant' }); paint(current); }
   }
-  layers.forEach(element => element.setAttribute('data-depth', ''));
-  tracks.push({ scene, track, layers, index, height: 0, hold: 0 });
-});
-function measureScenes() {
-  tracks.forEach(item => {
-    item.height = item.scene.offsetHeight;
-    item.hold = motionOff ? 0 : innerHeight * (innerWidth < 701 ? .34 : .65);
-    item.track.style.height = `${item.height + item.hold}px`;
-    item.scene.style.setProperty('--sticky-top', `${Math.min(0, innerHeight - item.height)}px`);
-  });
-  updateScenes();
 }
-function updateScenes() {
-  sceneFrame = 0;
-  let nearest = 0, distance = Infinity;
-  tracks.forEach(item => {
-    const bounds = item.track.getBoundingClientRect();
-    const height = item.height;
-    const start = Math.max(0, height - innerHeight);
-    const progress = item.hold ? clamp((-bounds.top - start) / item.hold, 0, 1) : 0;
-    const enter = clamp((bounds.top - innerHeight * .15) / (innerHeight * .8), 0, 1);
-    const leave = clamp((progress - .3) / .7, 0, 1);
-    const visible = bounds.top < innerHeight && bounds.bottom > 0;
-    item.scene.classList.toggle('is-visible', visible);
-    const score = Math.abs(bounds.top + (height + item.hold) / 2 - innerHeight / 2);
-    if (score < distance) { nearest = item.index; distance = score; }
-    item.layers.forEach((layer, i) => {
-      const factor = innerWidth < 701 ? .5 : 1;
-      const y = motionOff ? 0 : (enter * 70 - leave * 75) * factor;
-      const z = motionOff ? 0 : (-enter * (140 + i * 25) - leave * (100 + i * 45)) * factor;
-      layer.style.setProperty('--depth-y', `${y.toFixed(2)}px`);
-      layer.style.setProperty('--depth-z', `${z.toFixed(2)}px`);
-      layer.style.setProperty('--depth-r', `${motionOff ? 0 : (enter * 5 - leave * 3) * factor}deg`);
-      layer.style.setProperty('--depth-opacity', String(motionOff ? 1 : 1 - enter * .25 - leave * .25));
-      if (layer.matches('.sculpture')) {
-        layer.style.setProperty('--art-z', `${motionOff ? 0 : progress * 170 * factor}px`);
-        layer.style.setProperty('--art-r', `${motionOff ? 0 : progress * -32 * factor}deg`);
-        layer.style.setProperty('--art-x', `${motionOff ? 0 : progress * -30 * factor}px`);
-      }
-    });
-  });
-  chapterLinks.forEach((link, i) => { if (i === nearest) link.setAttribute('aria-current', 'true'); else link.removeAttribute('aria-current'); });
-}
-function scheduleScenes() { if (!sceneFrame) sceneFrame = requestAnimationFrame(updateScenes); }
-addEventListener('scroll', scheduleScenes, { passive: true });
-addEventListener('resize', measureScenes, { passive: true });
-motionButton.addEventListener('click', measureScenes);
-media.addEventListener('change', measureScenes);
-document.addEventListener('visibilitychange', () => {
-  document.querySelectorAll('.sculpture svg').forEach(element => { element.style.animationPlayState = document.hidden ? 'paused' : ''; });
-});
-// Focused content stays visually readable even during a scene transition.
-document.addEventListener('focusin', event => {
-  const scene = event.target.closest('.scene');
-  if (scene) scene.querySelectorAll('[data-depth]').forEach(layer => {
-    layer.style.setProperty('--depth-opacity', '1');
-  });
-});
-measureScenes();
-
-// Anchor targets resolve to the beginning of their native scroll track.
-// Sticky visual positions must not become the navigation destination.
-function navigateToChapter(hash, updateHistory = false) {
-  const target = document.getElementById(hash.slice(1));
-  if (!target) return;
-  const track = target.closest('.scene-track');
-  const top = track ? track.offsetTop : target.offsetTop;
-  if (updateHistory) history.pushState(null, '', hash);
-  scrollTo({ top, behavior: motionOff ? 'instant' : 'smooth' });
-  if (target.matches('.scene')) {
-    target.tabIndex = -1;
-    target.focus({ preventScroll: true });
+function navigate(hash, historyEntry = false) {
+  const targetElement = document.getElementById(hash.slice(1));
+  if (!targetElement) return;
+  const beat = targetElement.closest('.beat') || beats[0];
+  const index = beats.indexOf(beat);
+  if (historyEntry) history.pushState(null, '', hash);
+  if (motionOff) beat.scrollIntoView({ behavior: 'instant', block: 'start' });
+  else {
+    // Native scrolling remains the source of truth. Chapter jumps skip the long runway.
+    scrollTo({ top: index * span, behavior: 'instant' });
+    current = target = index; paint(index);
   }
+  beat.tabIndex = -1; beat.focus({ preventScroll: true });
 }
 document.querySelectorAll('a[href^="#"]').forEach(link => link.addEventListener('click', event => {
   const hash = link.getAttribute('href');
   if (!document.getElementById(hash.slice(1))) return;
-  event.preventDefault(); navigateToChapter(hash, true);
+  event.preventDefault(); navigate(hash, true);
 }));
-addEventListener('popstate', () => { if (location.hash) navigateToChapter(location.hash); });
-if (location.hash) requestAnimationFrame(() => navigateToChapter(location.hash));
+motionButton.addEventListener('click', () => setMode(!motionOff));
+media.addEventListener('change', event => setMode(event.matches));
+addEventListener('scroll', schedule, { passive: true });
+addEventListener('resize', () => measure(), { passive: true });
+addEventListener('popstate', () => navigate(location.hash || '#intro-scene'));
+document.addEventListener('visibilitychange', () => { if (document.hidden) { stopVoice(); cancelAnimationFrame(frame); frame = 0; } else schedule(); });
+setMode(motionOff, true);
+if (location.hash) requestAnimationFrame(() => navigate(location.hash));
