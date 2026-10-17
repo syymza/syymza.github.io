@@ -2,7 +2,7 @@
 
 The existing native-scroll scene renderer is retained. The change replaces instant chapter/city jumps with native smooth scrolling, cancels a pending navigation on wheel, touch, pointer or scroll-key input, and moves keyboard focus to the destination only after it arrives. Direct hash loads remain immediate. Resizing preserves the visual progress instead of snapping the renderer to the sampled scroll target. Reduced motion still selects the static document.
 
-The six-section story, public links, map coordinates and illustration geometry are unchanged. The selected Archivo treatment has more open headline tracking and width than the exploration. Its self-hosted variable WOFF2 is 89,232 bytes versus the 658,596-byte source TTF, with the original OFL licence preserved. Preload plus optional font display avoids a late typeface swap on a slow first visit.
+The six-section story, public links, map coordinates and illustration geometry are unchanged. The selected Archivo treatment has more open headline tracking and width than the exploration. The first-visit font follow-up embeds a 34,468-byte Archivo subset in the stylesheet, with the original OFL licence preserved. The browser can decode the font before painting text without a separate font request; see [font maintenance notes](../assets/fonts/README.md).
 
 ## Checks
 
@@ -11,7 +11,7 @@ The six-section story, public links, map coordinates and illustration geometry a
 - Chapter navigation is visibly intermediate after 120 ms, rather than an instant destination jump. Rapid destination changes settle on the latest chapter, with focus moved after arrival. Wheel interruption stops the pending destination. Static view, keyboard skip navigation and a reduced-motion preference change during a transition pass.
 - Forward and reverse CDP touch swipes pass in Chrome phone emulation. Orientation changes during a transition preserve normalized scroll position within 0.001 of a chapter unit.
 - Slow wheel, fast wheel, continuous synthetic wheel, reversals, navigation and interruption were profiled before/after in separate runs. Recordings and intermediate frames were inspected. No console errors were recorded in the functional checks.
-- Delaying the font by 1.2 seconds recorded Chrome CLS 0. Font-unavailable fallback layouts fit all six scenes at 320×668. WebKit lacks the layout-shift observer, so no WebKit CLS value is claimed.
+- In the earlier optional-font implementation, delaying the standalone font by 1.2 seconds recorded Chrome CLS 0 but could retain the wider fallback. Font-unavailable fallback layouts fit all six scenes at 320×668. WebKit lacks the layout-shift observer, so no WebKit CLS value is claimed.
 
 ## Measured frame timing
 

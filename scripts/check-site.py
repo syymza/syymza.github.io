@@ -3,6 +3,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 import re
 from urllib.parse import unquote, urlsplit
+from embedded_font import font_errors
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -27,6 +28,7 @@ class Page(HTMLParser):
 page = Page()
 page.feed((ROOT / "index.html").read_text())
 errors = page.errors
+errors.extend(font_errors(ROOT))
 checked = 0
 
 def check(reference, source):
