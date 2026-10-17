@@ -15,10 +15,45 @@ const mix = (a, b, t) => a + (b - a) * t;
 function smooth(a, b, value) { const t = clamp((value - a) / (b - a)); return t * t * (3 - 2 * t); }
 let motionOff = media.matches;
 let span = 1, current = 0, target = 0, activeIndex = -1, frame = 0;
+let lastTime = 0;
+let viewport = { width: 0, height: 0, mobile: false };
+const layers = beats.map(beat => ({
+  beat, copy: beat.querySelector('.beat-copy'), visual: beat.querySelector('.beat-visual'), drawn: null
+}));
+const ribbon = document.querySelector('#ribbon');
+// Pure timing/path helpers are kept together for refresh-rate and continuity tests.
+// motion-math:start
+const RESPONSE_MS = -(1000 / 60) / Math.log(1 - .23);
+function damp(value, destination, deltaMs) {
+  return destination + (value - destination) * Math.exp(-deltaMs / RESPONSE_MS);
+}
+function cameraPath(keys) {
+  const slopes = keys.map((key, i) => key.map((value, column) => {
+    if (i === 0) return keys[1][column] - value;
+    if (i === keys.length - 1) return value - keys[i - 1][column];
+    const before = value - keys[i - 1][column];
+    const after = keys[i + 1][column] - value;
+    return before * after <= 0 ? 0 : 2 * before * after / (before + after);
+  }));
+  return { keys, slopes };
+}
+function cameraAt(path, progress) {
+  const i = Math.min(path.keys.length - 2, Math.max(0, Math.floor(progress)));
+  const t = Math.max(0, Math.min(1, progress - i));
+  const t2 = t * t, t3 = t2 * t;
+  return path.keys[i].map((value, column) =>
+    (2 * t3 - 3 * t2 + 1) * value + (t3 - 2 * t2 + t) * path.slopes[i][column] +
+    (-2 * t3 + 3 * t2) * path.keys[i + 1][column] + (t3 - t2) * path.slopes[i + 1][column]
+  );
+}
+// motion-math:end
 const ellipses = [];
 for (let i = 0; i < 36; i++) {
   const ellipse = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
   ellipse.setAttribute('cx', '250'); ellipse.setAttribute('cy', '250');
+  ellipse.setAttribute('rx', String(61 + i * 3.2 + Math.sin(i * .12) * 8));
+  ellipse.setAttribute('ry', '180');
+  ellipse.setAttribute('transform', `rotate(${i * 5} 250 250)`);
   document.querySelector('#ribbon-lines').append(ellipse); ellipses.push(ellipse);
 }
 const wave = document.querySelector('.wave');
@@ -68,24 +103,27 @@ const mobileCameras = [
   [50,65,.7,-30,20,.015,275], [75,75,1.1,60,20,.075,315],
   [70,67,.9,-35,-16,.12,360]
 ];
+const desktopPath = cameraPath(desktopCameras);
+const mobilePath = cameraPath(mobileCameras);
 function drawCamera(progress) {
-  const cameras = innerWidth < 701 ? mobileCameras : desktopCameras;
-  const i = Math.min(cameras.length - 2, Math.floor(progress));
-  const t = smooth(0, 1, progress - i);
-  const camera = cameras[i].map((value, n) => mix(value, cameras[i + 1][n], t));
-  form.style.left = `${camera[0]}%`; form.style.top = `${camera[1]}%`;
-  form.style.transform = `translate(-50%,-50%) perspective(1200px) scale(${camera[2]}) rotateY(${camera[3]}deg) rotateZ(${camera[4]}deg)`;
-  form.style.opacity = camera[5];
-  ellipses.forEach((ellipse, n) => {
-    ellipse.setAttribute('rx', String(61 + n * 3.2 + Math.sin(progress * .7 + n * .12) * 8));
-    ellipse.setAttribute('ry', String(180 + Math.sin(progress * .5) * 10));
-    ellipse.setAttribute('transform', `rotate(${n * 5 + camera[6]} 250 250)`);
-  });
+  const camera = cameraAt(viewport.mobile ? mobilePath : desktopPath, progress);
+  const x = (camera[0] - 50) * viewport.width / 100;
+  const y = (camera[1] - 50) * viewport.height / 100;
+  // Only composite transforms change. The SVG geometry is built once, not repainted each frame.
+  form.style.transform = `translate(-50%,-50%) translate3d(${x.toFixed(3)}px,${y.toFixed(3)}px,0) perspective(1200px) scale(${camera[2].toFixed(5)}) rotateY(${camera[3].toFixed(4)}deg) rotateZ(${camera[4].toFixed(4)}deg)`;
+  form.style.opacity = camera[5].toFixed(4);
+  ribbon.style.transform = `rotate(${camera[6].toFixed(4)}deg)`;
 }
 function paint(progress) {
   const nextActive = clamp(Math.round(progress), 0, beats.length - 1);
   if (activeIndex !== nextActive) {
     activeIndex = nextActive; stopVoice();
+    layers.forEach(({ beat }, index) => {
+      const active = index === activeIndex;
+      beat.classList.toggle('is-active', active);
+      beat.inert = !active;
+      beat.setAttribute('aria-hidden', String(!active));
+    });
     number.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(beats.length).padStart(2, '0')}`;
     scrollLabel.textContent = activeIndex === beats.length - 1 ? 'Keep asking why' : 'Scroll to continue';
     chapterLinks.forEach((link, i) => {
@@ -93,8 +131,9 @@ function paint(progress) {
       else link.removeAttribute('aria-current');
     });
   }
-  const mobile = innerWidth < 701;
-  beats.forEach((beat, index) => {
+  const mobile = viewport.mobile;
+  layers.forEach((layer, index) => {
+    const { beat, copy, visual } = layer;
     const local = progress - index;
     const enter = smooth(-.48, -.015, local);
     const exit = smooth(.17, .73, local);
@@ -103,22 +142,20 @@ function paint(progress) {
     const visualExit = smooth(.28, .85, local);
     const visualAlpha = visualEnter * (1 - visualExit);
     const drawn = alpha > .002 || visualAlpha > .002;
-    beat.classList.toggle('is-drawn', drawn);
-    beat.classList.toggle('is-active', index === activeIndex);
-    beat.style.opacity = '1';
-    beat.style.setProperty('--scene-opacity', String(alpha));
-    beat.inert = index !== activeIndex;
-    beat.setAttribute('aria-hidden', String(index !== activeIndex));
+    if (layer.drawn !== drawn) {
+      layer.drawn = drawn;
+      beat.classList.toggle('is-drawn', drawn);
+      if (!drawn) beat.style.setProperty('--scene-opacity', '0');
+    }
     if (!drawn) return;
-    const copy = beat.querySelector('.beat-copy');
+    beat.style.setProperty('--scene-opacity', alpha.toFixed(4));
     const incoming = 1 - enter;
-    const x = mobile ? 0 : exit * Math.min(innerWidth * .22, 310);
-    const y = incoming * 75 + exit * (mobile ? innerHeight * .17 : -100);
+    const x = mobile ? 0 : exit * Math.min(viewport.width * .22, 310);
+    const y = incoming * 75 + exit * (mobile ? viewport.height * .17 : -100);
     const z = -incoming * 260 - exit * 580;
     const scale = mix(.76, 1, enter) * mix(1, .3, exit);
     copy.style.transform = `perspective(1400px) translate3d(${x}px,${y}px,${z}px) scale(${scale}) rotateX(${incoming * -9 + exit * 12}deg)`;
     copy.style.opacity = String(alpha);
-    const visual = beat.querySelector('.beat-visual');
     if (visual) {
       const incomingVisual = 1 - visualEnter;
       const visualScale = mix(.22, 1, visualEnter) * mix(1, .3, visualExit);
@@ -129,25 +166,37 @@ function paint(progress) {
   progressFill.style.transform = `scaleX(${progress / (beats.length - 1)})`;
   drawCamera(progress);
 }
-function sample() {
+function sample(now) {
   frame = 0;
   if (motionOff) return;
   target = clamp(scrollY / span, 0, beats.length - 1);
   if (Math.abs(target - Math.round(target)) * span < 2) target = Math.round(target);
-  current += (target - current) * .23;
-  if (Math.abs(target - current) < .0004) current = target;
+  const elapsed = lastTime ? now - lastTime : 1000 / 60;
+  lastTime = now;
+  current = damp(current, target, elapsed);
+  if (Math.abs(target - current) * span < .03) current = target;
   paint(current);
   if (current !== target) frame = requestAnimationFrame(sample);
+  else lastTime = 0;
 }
-function schedule() { if (!motionOff && !frame) frame = requestAnimationFrame(sample); }
+function schedule() {
+  if (!motionOff && !frame) { lastTime = 0; frame = requestAnimationFrame(sample); }
+}
 function measure(preserve = true) {
   if (motionOff) return;
-  const previous = current;
-  span = stage.clientHeight * (innerWidth < 701 ? .91 : .94);
-  track.style.height = `${stage.clientHeight + span * (beats.length - 1)}px`;
-  if (preserve) scrollTo({ top: previous * span, behavior: 'instant' });
-  current = target = clamp(scrollY / span, 0, beats.length - 1);
-  if (Math.abs(target - Math.round(target)) * span < 2) target = Math.round(target); paint(current);
+  const width = document.documentElement.clientWidth;
+  const height = stage.clientHeight;
+  if (preserve && width === viewport.width && height === viewport.height) return;
+  const nativeProgress = clamp(scrollY / span, 0, beats.length - 1);
+  viewport = { width, height, mobile: width < 701 };
+  span = height * (viewport.mobile ? .91 : .94);
+  track.style.height = `${height + span * (beats.length - 1)}px`;
+  if (preserve) scrollTo({ top: nativeProgress * span, behavior: 'instant' });
+  target = preserve ? nativeProgress : clamp(scrollY / span, 0, beats.length - 1);
+  if (!preserve) current = target;
+  if (Math.abs(target - Math.round(target)) * span < 2) target = Math.round(target);
+  paint(current);
+  if (current !== target) schedule();
 }
 function staticIndex() {
   let best = 0, distance = Infinity;
@@ -156,7 +205,9 @@ function staticIndex() {
 }
 function setMode(value, initial = false) {
   const index = initial ? 0 : motionOff ? staticIndex() : activeIndex;
-  motionOff = value; cancelAnimationFrame(frame); frame = 0; stopVoice();
+  motionOff = value; cancelAnimationFrame(frame); frame = 0; lastTime = 0; stopVoice();
+  activeIndex = -1;
+  layers.forEach(layer => { layer.drawn = null; layer.beat.style.opacity = value ? '' : '1'; });
   root.classList.toggle('cinematic', !value);
   motionButton.textContent = value ? 'Motion: off' : 'Motion: on';
   motionButton.setAttribute('aria-pressed', String(value));
@@ -197,6 +248,6 @@ media.addEventListener('change', event => setMode(event.matches));
 addEventListener('scroll', schedule, { passive: true });
 addEventListener('resize', () => measure(), { passive: true });
 addEventListener('popstate', () => navigate(location.hash || '#intro-scene'));
-document.addEventListener('visibilitychange', () => { if (document.hidden) { stopVoice(); cancelAnimationFrame(frame); frame = 0; } else schedule(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { stopVoice(); cancelAnimationFrame(frame); frame = 0; lastTime = 0; } else schedule(); });
 setMode(motionOff, true);
 if (location.hash) requestAnimationFrame(() => navigate(location.hash));
