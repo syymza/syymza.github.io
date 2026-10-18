@@ -39,3 +39,5 @@ h1,h2{font-family:Archivo,Arial,sans-serif;font-weight:720;font-stretch:88%;line
 @media(max-height:730px) and (max-width:700px){.cinematic .origins h2,.cinematic .journey h2,.cinematic .work h2,.cinematic .person h2{font-size:27px}.cinematic .intro h1{font-size:34px}}
 
 @media(max-width:700px){h1,h2{font-stretch:86%;letter-spacing:-.025em}}
+
+.personal-links{display:flex;flex-wrap:wrap;column-gap:20px;align-items:center}.personal-links .evidence-link{margin-top:8px}
