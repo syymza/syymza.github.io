@@ -2,7 +2,7 @@
 
 Copyright 2020 The Archivo Project Authors. Distributed under the [SIL Open Font License 1.1](OFL.txt).
 
-Source: [Archivo in Google Fonts](https://github.com/google/fonts/tree/main/ofl/archivo), upright `Archivo[wdth,wght].ttf`. The 34,468-byte self-hosted WOFF2 retains weight 400–720 and width 86–100. Its character set covers printable ASCII, a nonbreaking space, curly quotes, en dash and available arrow glyphs. The diagonal external-link arrow uses the existing system-font glyph fallback because Archivo does not supply it. The existing English copy is covered; expand the subset before adding other characters.
+Source: [Archivo in Google Fonts](https://github.com/google/fonts/tree/main/ofl/archivo), upright `Archivo[wdth,wght].ttf`. The 34,468-byte self-hosted WOFF2 retains weight 400–720 and width 86–100. Its character set covers printable ASCII, a nonbreaking space, curly quotes, en dash and available arrow glyphs. The existing English copy is covered; expand the subset before adding other characters.
 
 The font is embedded as a data URL in the existing render-blocking stylesheet. It arrives with the CSS rather than through a second request. `font-display: block` allows the already-local data to decode before text paints; it does not wait for another network fetch. This avoids the previous optional-font policy retaining a wider system fallback on a first visit. A corrupt or unsupported font still falls back to readable system text. A future Content Security Policy must allow `data:` fonts.
 
