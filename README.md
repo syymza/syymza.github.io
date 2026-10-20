@@ -1,6 +1,6 @@
 # Daniele Zanni
 
-A personal portfolio about software, engineering leadership and curiosity, told through six illustrated chapters and an interactive map of the places I have called home.
+A personal portfolio about software, engineering leadership and curiosity, told through seven illustrated chapters and an interactive map of the places I have called home.
 
 **[Visit the portfolio](https://syymza.github.io/)** · [Report an issue](https://github.com/syymza/syymza.github.io/issues) · [Contributing](CONTRIBUTING.md)
 
@@ -10,7 +10,7 @@ A personal portfolio about software, engineering leadership and curiosity, told 
 
 Scroll through the story or use the chapter navigation. In Places, choose Milan, Oulu, London, Sydney, Dubai or Abu Dhabi to follow the journey. Use **Motion on** to switch to a static page; the system's reduced-motion preference also selects that view. Keyboard navigation and a skip link provide another way through the story.
 
-The Swiss workshop design uses self-hosted Archivo, charcoal, warm white and vermilion. The site uses plain HTML, CSS, JavaScript and inline SVG. There is no build step, dependency install, backend, analytics or runtime API. Chapter and city links scroll smoothly; wheel, touch or keyboard input can interrupt them. Research, patent, LinkedIn and GitHub links open external sites when followed.
+The Swiss workshop design uses self-hosted Archivo, charcoal, warm white and vermilion. The site uses plain HTML, CSS, JavaScript and inline SVG. There is no build step, dependency install, backend, analytics or runtime API. Chapter and city links scroll smoothly; wheel, touch or keyboard input can interrupt them. The Projects chapter presents a curated illustrated selection before Next. Research, patent, project, LinkedIn and GitHub links open external sites when followed.
 
 ## Run locally
 
@@ -33,7 +33,7 @@ node --check app.js
 
 The link check validates local HTML assets, fragment targets, unique HTML IDs and local Markdown file links. It does not validate external sites or browser behavior.
 
-For changes to the site, check all six chapters and city selections at desktop and phone widths, keyboard navigation, static view and reduced motion. Verify that the map, labels and inline SVG illustrations remain visible in Chrome and Safari/WebKit. Responsive emulation is useful; state separately whether a physical phone was tested.
+For changes to the site, check all seven chapters and city selections at desktop and phone widths, keyboard navigation, static view and reduced motion. Verify that the map, labels and inline SVG illustrations remain visible in Chrome and Safari/WebKit. Responsive emulation is useful; state separately whether a physical phone was tested.
 
 ## Source guide
 
