@@ -37,6 +37,8 @@ For changes to the site, check all seven chapters and city selections at desktop
 
 ## Source guide
 
+The [app support and privacy pages](docs/app-support-pages.md) are separate static pages under `done-and-dated/`, `spin-sprout/` and `walk-ledger/`. They do not change the portfolio homepage. Run `python3 scripts/check-app-support.py` when editing them.
+
 | File | Responsibility |
 | --- | --- |
 | `index.html` | Story content, city details, inline illustrations and map geometry |

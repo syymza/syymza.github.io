@@ -23,5 +23,7 @@ jobs:
           node-version: '24'
       - name: Check local site and documentation links
         run: python3 scripts/check-site.py
+      - name: Check app support and privacy pages
+        run: python3 scripts/check-app-support.py
       - name: Check JavaScript syntax
         run: node --check app.js
