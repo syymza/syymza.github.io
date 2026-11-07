@@ -1,10 +1,10 @@
-"""Validate the migrated, static support pages without network access."""
+"""Validate the static app support pages without network access."""
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
-FOLDERS = ("done-and-dated", "spin-sprout", "walk-ledger")
+FOLDERS = ("done-and-dated", "spin-sprout", "walk-ledger", "note-porch")
 errors = []
 
 
@@ -43,8 +43,8 @@ for folder in FOLDERS:
         if "https://apportico.github.io/" in text:
             errors.append(f"{path.relative_to(ROOT)}: old hosting link remains")
 
-if len(pages) != 19:
-    errors.append(f"Expected 19 existing support/privacy/language pages, got {len(pages)}")
+if len(pages) != 21:
+    errors.append(f"Expected 21 support/privacy/language pages, got {len(pages)}")
 
 for path, page in pages.items():
     for reference in page.links:

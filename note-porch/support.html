@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Note Porch support</title>
+  <meta name="description" content="Help with Note Porch notes, Home Screen and Lock Screen widgets, daily plans, backups and recovery. Provided by Daniele Zanni.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header>
+    <nav aria-label="Note Porch pages">
+      <a href="support.html" aria-current="page">Support</a>
+      <a href="privacy.html">Privacy policy</a>
+    </nav>
+  </header>
+  <main id="main" tabindex="-1">
+    <h1>Note Porch support</h1>
+    <p>For questions, feedback or help with a problem, email <strong><a href="mailto:daniele@duck.com">daniele@duck.com</a></strong>.</p>
+    <p>Developer: <strong>Daniele Zanni</strong>.</p>
+    <p>Note Porch keeps short text notes on your iPhone or iPad and shows them in widgets. It works offline without an account, app server, advertising or analytics. It requires iOS or iPadOS 17 or later.</p>
+
+    <h2>Create your first note</h2>
+    <ol>
+      <li>Create a note and enter a title and text. Short text is easier to read in a widget.</li>
+      <li>Choose one of four color presets: <strong>Teal</strong>, <strong>Paper</strong>, <strong>Midnight</strong> or <strong>Plum</strong>.</li>
+      <li>Choose <strong>Standard</strong> or <strong>Large</strong> text and <strong>Leading</strong> or <strong>Centered</strong> alignment, then save.</li>
+    </ol>
+    <p>A title can contain up to 80 characters and note text up to 2,000. The space in a widget is smaller than the editor, so long text can be cut off. Smaller Lock Screen formats use system-controlled text sizes and layout; your choices do not apply identically to every format.</p>
+
+    <h2>Add a Home Screen widget</h2>
+    <ol>
+      <li>Open Note Porch and save a note.</li>
+      <li>Touch and hold an empty area of the Home Screen. Choose <strong>Edit → Add Widget</strong>, or the add button shown by your system.</li>
+      <li>Search for <strong>Note Porch</strong> and choose a small, medium or large widget.</li>
+      <li>Touch and hold the added widget, then choose <strong>Edit Widget</strong>. Set <strong>Display</strong> to <strong>One note</strong> and select a note, or choose <strong>Daily plan</strong>.</li>
+    </ol>
+    <p>Widgets must be added through the system. The app cannot place one on your Home Screen automatically. Menu names can vary with your system version.</p>
+
+    <h2>Add a Lock Screen widget</h2>
+    <ol>
+      <li>Touch and hold the Lock Screen, choose <strong>Customize</strong>, then select the Lock Screen and tap its widget area.</li>
+      <li>Choose <strong>Note Porch</strong> and an available inline, circular or rectangular format. Available positions depend on the device and system layout.</li>
+      <li>While customizing, tap the widget to choose <strong>One note</strong> and a note, or <strong>Daily plan</strong>, then finish the system setup.</li>
+    </ol>
+    <p>Lock Screen widgets have limited space, and the system controls their colors. Use a short line of text. Tinted Home Screen appearances can also change widget colors.</p>
+    <p><strong>Widgets may be visible to other people without opening the app.</strong> Do not put passwords or sensitive information in them.</p>
+
+    <h2>Choose One note or Daily plan</h2>
+    <p><strong>One note</strong> keeps a widget assigned to the note you select. If you delete that note, choose another in the widget settings. The app does not intentionally substitute a different note for a missing One note selection, but an older display can remain until iOS refreshes it.</p>
+    <p><strong>Daily plan</strong> follows the times you set in the app. Save your notes first, open Daily plan, choose <strong>Add time</strong>, then select a time and note. You can add up to 16 times each day. Each note stays selected until the next scheduled time, including overnight. Select Daily plan in each widget that should follow it.</p>
+    <p>Times follow the device's current time zone. A skipped daylight-saving time moves to the next valid time; a repeated time runs once at its first occurrence. iOS controls when widgets actually update, so a change can appear late. Note Porch is not an alarm or reminder service.</p>
+
+    <h2>Back up and recover your notes</h2>
+    <p>Open <strong>Settings → Backup &amp; Recovery</strong>. There is no app-managed cloud sync or server copy. Keep an up-to-date backup outside the app before deleting it or replacing your device.</p>
+    <ul>
+      <li><strong>Export Notes:</strong> creates a JSON backup of your notes and daily plan. Choose where to save it in Files. A cloud storage provider may need a connection.</li>
+      <li><strong>Import Notes:</strong> previews and adds missing notes from a backup. Existing notes and your daily plan stay unchanged; matching notes are skipped.</li>
+      <li><strong>Restore from Backup:</strong> previews a backup, then replaces your current notes and daily plan only after you confirm.</li>
+      <li><strong>Review Previous Snapshot:</strong> lets you review and restore the previous local snapshot, if one is available. It is a recent copy, not a full version history.</li>
+      <li><strong>Export Recovery Files:</strong> saves raw current, previous and archived files for safekeeping or troubleshooting. This is different from a normal backup. Use Export Notes to create a file you can import or restore.</li>
+    </ul>
+    <p>Import and recovery preserve original files locally before changing your notes. After a successful recovery export, <strong>Remove Exported Recovery Copies</strong> offers a separate confirmation to remove only the matching local archives included in that export. It keeps your current notes and previous snapshot and does not delete the exported file.</p>
+    <p>Backup and recovery files contain readable note data. Note Porch does not encrypt or password-protect these exports. Store them somewhere private and check that you can access them. Deleting a note is not secure erasure: older copies can remain in a previous snapshot, recovery archive, exported file or device backup.</p>
+
+    <h2>Troubleshooting</h2>
+    <ul>
+      <li><strong>The widget is missing:</strong> open the app once, save a note and try the widget gallery again. Adding a widget is a manual system step.</li>
+      <li><strong>The widget is out of date:</strong> open the app and check your saved note and the widget's Display setting. Saving requests a refresh, but iOS decides when to show it. After restarting the device, unlock it once so saved notes can be read.</li>
+      <li><strong>A deleted note title still appears in widget settings:</strong> the system can retain a cached selection title. Edit the widget and choose a current note. Deletion cannot guarantee immediate removal from all system-rendered snapshots or menus.</li>
+      <li><strong>A backup cannot be imported:</strong> select a JSON file made with Export Notes, not Export Recovery Files. Note backups must be 4 MB or smaller. Keep the original file and check available device storage.</li>
+      <li><strong>Saved notes cannot be opened:</strong> do not delete the app. Keep any error message, export recovery files if available and review a known-good backup or previous snapshot. Nothing is replaced until you confirm recovery.</li>
+      <li><strong>Local recovery storage is full:</strong> export recovery files and keep that file safe, then use the separate removal confirmation to clear the exported local archives.</li>
+      <li><strong>An export fails:</strong> check free storage and the selected Files provider. A cloud provider may require a connection or sign-in. Try a location you can access and verify the saved file.</li>
+    </ul>
+
+    <h2>Contact support safely</h2>
+    <p>Email <strong><a href="mailto:daniele@duck.com">daniele@duck.com</a></strong> with your device model, iOS or iPadOS version, app version if known, the steps that led to the issue and the exact error message.</p>
+    <p>Please remove private information from examples and screenshots. Do not send full note backups or recovery files unless necessary and you are comfortable sharing their contents. Support cannot retrieve notes from a Note Porch server because there is no server copy.</p>
+    <p>Read the <a href="privacy.html">privacy policy</a> for details about local storage, exports, deletion and these support pages.</p>
+  </main>
+  <footer>© 2026 Daniele Zanni</footer>
+</body>
+</html>
