@@ -43,8 +43,8 @@ for folder in FOLDERS:
         if "https://apportico.github.io/" in text:
             errors.append(f"{path.relative_to(ROOT)}: old hosting link remains")
 
-if len(pages) != 21:
-    errors.append(f"Expected 21 support/privacy/language pages, got {len(pages)}")
+if len(pages) != 103:
+    errors.append(f"Expected 103 support/privacy/language pages, got {len(pages)}")
 
 for path, page in pages.items():
     for reference in page.links:

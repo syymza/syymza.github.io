@@ -7,7 +7,7 @@ Note Porch is a separate addition, documented below. Its pages are new English s
 | App | Support | Privacy |
 | --- | --- | --- |
 | Done & Dated | [Support](../done-and-dated/index.html) | [Privacy](../done-and-dated/privacy.html) |
-| Spin Sprout | [Support](../spin-sprout/support.html) and [existing six-language index](../spin-sprout/index.html) | [Privacy](../spin-sprout/privacy.html) |
+| Spin Sprout | [Support](../spin-sprout/support.html) and [47-language index](../spin-sprout/index.html) | [Privacy](../spin-sprout/privacy.html) |
 | WalkLedger | [Support](../walk-ledger/support.html) | [Privacy](../walk-ledger/privacy.html) |
 | Note Porch | [Support](../note-porch/support.html) | [Privacy](../note-porch/privacy.html) |
 | Dimensions Planner | [Existing personal-host support](https://syymza.github.io/dimensions-planner-support/) | [Existing personal-host privacy](https://syymza.github.io/dimensions-planner-support/privacy.html) |
@@ -24,7 +24,7 @@ python3 scripts/check-app-support.py
 node --check app.js
 ```
 
-The focused check covers all 21 HTML pages (19 migrated pages and two Note Porch pages), page language/title/heading, local and same-host links, fragment targets, and the absence of scripts or old-host links in the pages. It does not verify live deployment or external service availability. Check the deployed URLs before changing App Store fields or app links.
+The focused check covers all 103 HTML pages (97 Spin Sprout pages, four other migrated pages and two Note Porch pages), page language/title/heading, local and same-host links, fragment targets, and the absence of scripts or old-host links in the pages. It does not verify live deployment or external service availability. Check the deployed URLs before changing App Store fields or app links.
 
 Keep the current language scope and privacy meaning unchanged during URL migration. App Store fields may be locked while a version is in review; preserve the pending submission and record any URL update that must wait. Updating a source link does not change an already distributed binary.
 
@@ -52,3 +52,7 @@ After an approved merge and Pages deployment, verify these exact URLs before cha
 
 - https://syymza.github.io/note-porch/support.html
 - https://syymza.github.io/note-porch/privacy.html
+
+## Spin Sprout language expansion
+
+The47-language support/privacy content was AI authored and contextually reviewed, without human review. It includes47 support/privacy pairs, a language index and English root aliases. The owner explicitly approved public publication on November8,2026 and confirmed `syymza.github.io` as the destination. Existing apportico URLs are retained for already distributed binaries and the pending App Store submission. This website update does not alter that submission or claim version1.1 is live.
