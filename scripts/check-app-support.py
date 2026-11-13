@@ -4,7 +4,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
-FOLDERS = ("done-and-dated", "spin-sprout", "walk-ledger", "note-porch")
+FOLDERS = ("done-and-dated", "spin-sprout", "walk-ledger", "note-porch", "minuteloom")
 errors = []
 
 
@@ -43,8 +43,8 @@ for folder in FOLDERS:
         if "https://apportico.github.io/" in text:
             errors.append(f"{path.relative_to(ROOT)}: old hosting link remains")
 
-if len(pages) != 103:
-    errors.append(f"Expected 103 support/privacy/language pages, got {len(pages)}")
+if len(pages) != 105:
+    errors.append(f"Expected 105 support/privacy/language pages, got {len(pages)}")
 
 for path, page in pages.items():
     for reference in page.links:
