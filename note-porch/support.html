@@ -52,6 +52,18 @@
     <p><strong>Daily plan</strong> follows the times you set in the app. Save your notes first, open Daily plan, choose <strong>Add time</strong>, then select a time and note. You can add up to 16 times each day. Each note stays selected until the next scheduled time, including overnight. Select Daily plan in each widget that should follow it.</p>
     <p>Times follow the device's current time zone. A skipped daylight-saving time moves to the next valid time; a repeated time runs once at its first occurrence. iOS controls when widgets actually update, so a change can appear late. Note Porch is not an alarm or reminder service.</p>
 
+    <h2>Apple Watch companion (version 1.1 and later)</h2>
+    <p>These steps apply to version 1.1 and later. Check your installed version before looking for Watch settings. The companion requires a paired iPhone and watchOS 10 or later; it is a read-only copy of one selected note, not a notebook editor or an independent daily-plan scheduler.</p>
+    <ol>
+      <li>Install Note Porch on your paired Apple Watch and open Note Porch on your iPhone.</li>
+      <li>In Note Porch on your iPhone, open <strong>Settings → Apple Watch → Watch companion</strong> and turn on <strong>Share a note with Apple Watch</strong>.</li>
+      <li>Choose <strong>One note</strong> and a saved note, or <strong>Daily plan</strong> to share the note currently selected by your plan. Choose <strong>Send update</strong>.</li>
+      <li>Open Note Porch on the Watch. Choose <strong>Connect this iPhone</strong> when requested, or <strong>Refresh</strong> to request a fresh copy. Keep Note Porch open on the paired iPhone if it cannot be reached.</li>
+    </ol>
+    <p>The Watch shows the iPhone's update time. A saved copy can be read while disconnected until it expires, at most 24 hours later. A daily-plan copy also expires at the next scheduled change and needs refreshing after a time-zone change. Expired content asks you to refresh; it does not silently select another note.</p>
+    <p>Sharing is off by default. Deletions and turning sharing off cannot immediately erase a copy on a disconnected Watch. Expiry hides the content but does not securely erase cached bytes or backups. Avoid sharing passwords or sensitive notes. No notebook is transferred to the Watch or sent to a Note Porch server.</p>
+    <p>If the Watch reports a new iPhone note connection, use <strong>Connect this iPhone</strong> to explicitly replace its trusted cached connection. If an update fails, keep your existing notes, open the iPhone app and try again. Delivery is controlled by Apple and is not an alarm or exact-time guarantee.</p>
+
     <h2>Back up and recover your notes</h2>
     <p>Open <strong>Settings → Backup &amp; Recovery</strong>. There is no app-managed cloud sync or server copy. Keep an up-to-date backup outside the app before deleting it or replacing your device.</p>
     <ul>
